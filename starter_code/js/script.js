@@ -15,7 +15,7 @@
 // # Initialize the Soundcloud API client with our client ID
 //
 SC.initialize({
-  client_id: 'TODO: Replace this with your client_id'
+  client_id: '3d1c831fc20ea4dd5abf626a4ec2431c'
 });
 
 
@@ -31,6 +31,10 @@ SC.initialize({
 // to execute. A page can't be manipulated safely until the document is ready.
 //
 $(document).ready(function() {
+  $("#random").click(randomClicked);
+  
+  $("#go").click(goClicked);
+  
   // Add click handlers to 'go' and 'random' buttons here.
 });
 
@@ -50,6 +54,9 @@ $(document).ready(function() {
 //
 function goClicked() {
   // TODO: fill this out
+    var search = $("#mood").val();
+    searchTracks(search);
+    updateJumboTron(search);
 }
 
 //
@@ -64,6 +71,15 @@ function goClicked() {
 //
 function searchTracks(mood) {
   // TODO: fill this out
+      SC.get(
+      '/tracks', {q:mood, limit: 50}).then( 
+      function(tracks){
+        var i = Math.floor(Math.random()*tracks.length);
+        var track = tracks[i];
+        console.log(track);
+        playTrack(track.id);
+      });
+  
 }
 
 //
@@ -79,8 +95,13 @@ function searchTracks(mood) {
 var currentSong = null; // The song that is currently playing
 function playTrack(trackid) {
   if (currentSong != null) {
+    currentSong.pause();
     // TODO: stop the current song
   }
+  SC.stream('/tracks/' + trackid).then(function(player) {
+    player.play();
+    currentSong = player;
+  });
   // TODO: stream the track based on the given id and update 'currentSong'.
 }
 
@@ -111,6 +132,9 @@ function updateJumboTron(mood) {
 //
 function randomClicked() {
   // TODO: fill this out
+  var Moo = randomMood();
+  searchTracks(Moo);
+  updateJumboTron(Moo);
 }
 
 //
@@ -119,9 +143,11 @@ function randomClicked() {
 // Returns a random mood from moodList.
 //
 // TODO: add moods to this list
-var moodList = [];
+var moodList = ["happy","sad","angry","hungry","screams"];
 function randomMood() {
   // TODO: fill this out
+  var randoming = Math.floor(Math.random()*moodList.length) ;
+  return moodList[randoming];
 }
 
 
